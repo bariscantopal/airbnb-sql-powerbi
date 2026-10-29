@@ -1,0 +1,12 @@
+# ham veri ve buyuk dosyalar
+*.csv
+*.csv.gz
+*.gz
+*.bak
+*.mdf
+*.ldf
+# gecici dosyalar
+~$*
+*.tmp
+.vscode/
+__pycache__/
