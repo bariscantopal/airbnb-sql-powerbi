@@ -1,7 +1,7 @@
 # Business Questions
 
 **City:** Istanbul
-**Data source:** Inside Airbnb, snapshot date 2026-09-25
+**Data source:** Inside Airbnb, collected 2026-09-28 and 2026-09-29 (shown as 2026-09-25 on the Inside Airbnb page)
 **Goal:** Answer questions about the Istanbul short-term rental market for three users.
 
 ## Stakeholders
@@ -23,7 +23,7 @@
 ### Host
 
 - **Q6.** Do superhosts make a difference in price, rating, and unavailable days?
-- **Q7.** Are host experience and response speed related to the rating?
+- **Q7.** Is host experience (time as a host) related to the rating?
 - **Q8.** Which sub-score (cleanliness, location, value, etc.) is the lowest? What seems to drive the overall rating?
 - **Q9.** Are amenities (wifi, air conditioning, balcony, etc.) related to a higher price?
 
@@ -31,7 +31,7 @@
 
 - **Q10.** Which neighbourhoods are the most and least expensive (median price)? Where are the listings concentrated?
 - **Q11.** How do the nightly price and the price per person change with capacity (number of guests)?
-- **Q12.** In the next 12 months, which months are the busiest (lowest availability), and how does the listed price change? (Investors can also use this to understand seasonality.)
+- **Q12.** In the next 12 months, which months have the most and the fewest available days? (Investors can also use this to understand seasonality.)
 
 ## KPI Definitions
 
@@ -41,7 +41,7 @@ Each KPI is defined once here and used the same way in the whole project.
 |---|---|---|---|
 | Median price | Median nightly price of listings that are not flagged as price outliers. | Q10, Q11 | The average is pushed up by a few very expensive listings. The median is safer. |
 | Unavailable-day rate | Number of calendar days with available = f, divided by total calendar days. | Q2, Q6, Q12 | This is NOT occupancy. A host may block a day without a booking. |
-| Listed / Active listing | Listed: availability is open (has_availability = true). Active: Listed AND at least 1 review in the last 12 months before the snapshot date. | All questions | A stay without a review is not counted as active. New listings may be missed. |
+| Listed / Active listing | Listed: availability is open (has_availability = true). Active: Listed AND at least 1 review in the 12 months before the reference date (2026-09-28). | All questions | A stay without a review is not counted as active. New listings may be missed. |
 | Average rating | Average of review_scores_rating. Listings without reviews have no rating and are not counted. | Q6, Q7, Q8 | New listings have no rating, so they are missing from this KPI. |
 | Superhost rate | Listings with a superhost host, divided by listings with known superhost status. Counted per listing, not per host. | Q6 | One superhost with 3 listings counts as 3 listings. |
 | Professional host share | Listings of hosts with 5 or more listings, divided by all listings. | Q4 | The threshold of 5 is a choice. Only Istanbul listings in this dataset are counted. |
@@ -51,9 +51,10 @@ Each KPI is defined once here and used the same way in the whole project.
 
 ## Assumptions and Limitations
 
-- **Snapshot:** The data shows one day (2026-09-25). It does not include past prices or real bookings.
+- **Snapshot:** The data shows the market on 28-29 September 2026. It does not include past prices or real bookings.
 - **Calendar looks forward:** The calendar covers about the next 365 days. For past trends, reviews are used.
 - **Available is not booked:** A day with available = f may be booked or blocked by the host.
 - **Price currency:** The currency of the price column will be checked in the data and written in the README.
-- **Calendar price can be empty:** If so, the listing price is used instead.
+- **Calendar has no price:** The calendar file has no price column, so the listing price is used and the price change by month cannot be analysed.
 - **Sample:** Inside Airbnb collects public pages. It is not the official data of Airbnb.
+- **Host response speed:** The columns `host_response_time`, `host_response_rate` and `host_acceptance_rate` are empty in this snapshot, so response speed is not analysed.
