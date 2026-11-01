@@ -23,7 +23,7 @@ Raw data profile of the Inside Airbnb Istanbul snapshot (2026-09-25).
 
 - About 9.8% of listings have no price (about 2,680 listings).
 - Price is stored as text, for example `$4,736.32` (symbol, comma for thousands, dot for decimals). It will be converted to DECIMAL in silver.
-- Currency: to be verified. The values look too high for US dollars, so they may be Turkish lira.
+- Currency: Turkish lira (TRY). The Inside Airbnb data dictionary says price is the daily price in local currency and the dollar sign is only a technical artifact of the export.
 
 ### Identifier and room type
 

@@ -54,7 +54,7 @@ Each KPI is defined once here and used the same way in the whole project.
 - **Snapshot:** The data shows the market on 28-29 September 2026. It does not include past prices or real bookings.
 - **Calendar looks forward:** The calendar covers about the next 365 days. For past trends, reviews are used.
 - **Available is not booked:** A day with available = f may be booked or blocked by the host.
-- **Price currency:** The currency of the price column will be checked in the data and written in the README.
+- **Price currency:** Prices are in Turkish lira (TRY), the local currency, according to the Inside Airbnb data dictionary. The dollar sign in the file is only a technical artifact of the export.
 - **Calendar has no price:** The calendar file has no price column, so the listing price is used and the price change by month cannot be analysed.
 - **Sample:** Inside Airbnb collects public pages. It is not the official data of Airbnb.
 - **Host response speed:** The columns `host_response_time`, `host_response_rate` and `host_acceptance_rate` are empty in this snapshot, so response speed is not analysed.
