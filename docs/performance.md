@@ -1,4 +1,4 @@
-# Performance: silver.calendar index experiment
+# Performance: index experiments
 
 Script: [`sql/05_performance/calendar_index_experiment.sql`](../sql/05_performance/calendar_index_experiment.sql)
 
@@ -85,3 +85,63 @@ An extra nonclustered rowstore index on `listing_id` was not added, because no m
 - Measurements come from a single local machine (SQL Server Express) and a single snapshot; absolute times will differ elsewhere, the read counts and the relative differences are the meaningful part.
 - Index build times were not recorded.
 - Load performance with the columnstore index (insert into an empty indexed table vs. build the index after loading) has not been measured yet.
+
+---
+
+# Silver indexes (guide section 10.2)
+
+Script: [`sql/05_performance/silver_index_experiment.sql`](../sql/05_performance/silver_index_experiment.sql)
+
+## Starting point
+
+| Table | Clustered index | Rows | Pages |
+|---|---|---:|---:|
+| `silver.listings` | PK on `listing_id` | 27,232 | 1,170 (~9 MB) |
+| `silver.reviews` | PK on `review_id` | 624,804 | 40,931 (~320 MB, review text) |
+
+`silver.reviews` is sorted by `review_id`, but no query filters on it: the workload uses `listing_id` and `review_date`.
+`gold.fact_reviews` joins reviews to listings on `listing_id` (orphan filter), so it needs `listing_id` + `review_date` from reviews.
+
+## Results
+
+| Query | Indexes | reviews reads | CPU (ms) | Plan |
+|---|---|---:|---:|---|
+| R1: reviews per year (via `gold.fact_reviews`) | PK only | 40,911 | 265 | Clustered Index Scan, Hash Join |
+| R1 | + `ix_reviews_listing` | 1,943 | 281 | Index Scan, Merge Join |
+| R2: one listing's reviews | PK only | 40,911 | 78 | Clustered Index Scan |
+| R2 | + `ix_reviews_listing` | 3 | 0 | Index Seek |
+| R3: date range Jan–Sep 2026 | `ix_reviews_listing` | 1,943 | 63 | Index Scan, Merge Join |
+| R3 | + `ix_reviews_date` (guide) | 1,943 | 79 | new index **not used** |
+| R3 | + `ix_reviews_date_listing` (SQL Server suggestion) | 454 | 47 | Index Seek, Hash Join |
+
+`listings` reads stayed at 1,170 pages in every R1/R3 run. Host queries without an index: `gold.dim_host` 16 ms CPU, single-host lookup (347 rows) 0 ms CPU, both 1,170 pages.
+
+## Decisions
+
+| Index | Decision | Reason |
+|---|---|---|
+| `ix_reviews_listing (listing_id) INCLUDE (review_date)` | **Kept** | Suggested by both the guide and SQL Server. Point lookup 40,911 → 3 pages; yearly aggregation reads ~21x fewer pages and uses a merge join. CPU of the aggregation did not change (data in memory, cost is join + aggregation). Index size: 1,943 pages. |
+| `ix_reviews_date (review_date)` | Not added | SQL Server did not use it: it lacks `listing_id`, which the `fact_reviews` join needs, so it would require key lookups. |
+| `ix_reviews_date_listing (review_date) INCLUDE (listing_id)` | Not added | Seek worked (1,943 → 454 pages) but saved only ~6 ms on a query used once (Q3b). Not worth an extra index to rebuild on every load. |
+| `ix_listings_host (host_id)` | Not added | `silver.listings` is only 1,170 pages; host queries already run in 0–16 ms CPU. SQL Server suggested it for `dim_host` (est. 31.5%), but the gain is too small for the maintenance cost. |
+| `ix_listings_neigh (neighbourhood) INCLUDE (price, room_type)` | Not added | Same table and reasoning; not measured. |
+
+## Findings
+
+1. **An index helps when the table's own order does not match the query.** `silver.reviews` was sorted by `review_id`, a column no query uses; a narrow index on `listing_id` fixed both the lookup and the join.
+2. **INCLUDE decides whether an index is usable.** The guide's `review_date` index was ignored because it could not supply `listing_id`; the same key with `INCLUDE (listing_id)` was used immediately.
+3. **Fewer reads do not always mean less time.** With data already in memory, the yearly aggregation read 21x fewer pages but took the same CPU time.
+4. **An index can change the join strategy.** With both inputs sorted by `listing_id`, SQL Server switched from a hash join to a merge join; the date-ordered index switched it back.
+5. **Missing-index suggestions are a starting point, not a decision.** SQL Server suggested three indexes; only one was worth its cost after measuring.
+6. **Small tables rarely need extra indexes.** At 1,170 pages, `silver.listings` is scanned in milliseconds.
+
+# Workload check: Q12a
+
+The slowest analysis query, Q12a (`sql/04_analysis/q12_monthly_availability.sql`, monthly availability over 8.9M priced calendar days), was measured again after the columnstore change in 10.1. No extra index was added.
+
+| | Elapsed | Reads |
+|---|---:|---|
+| Before (heap, earlier note; cache state not recorded) | ~40 s | – |
+| After (clustered columnstore) | 0.92 s | calendar 1,892 (lob), listings 1,170, dim_date 69 |
+
+Most of the remaining time is the Hash Aggregate (0.76 s), which an index would not reduce. The columnstore decision in 10.1 is what made the real workload fast.
