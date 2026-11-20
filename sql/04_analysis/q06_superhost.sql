@@ -104,3 +104,50 @@ Private room     1             810       4037.15    4.76        13.40           
 Shared room      0             120       3099.62    4.20        1.30             0.0900
 Shared room      1             14        3618.08    4.83        8.07             0.1282
 */
+/*
+=====================================================================
+Median check (added 2026-11-21)
+---------------------------------------------------------------------
+Purpose
+- Q6d: the superhost price premium with medians instead of averages.
+  The dashboard shows prices as medians; ratings and review counts
+  above stay averages.
+
+Definitions
+- Scope as in Q6b: short-term market (is_long_min_stay = 0), listings
+  with a price, no outliers.
+- PERCENTILE_CONT ignores NULLs, so a CASE without ELSE keeps only
+  the rows of each group.
+
+Finding
+- All room types: 5,432 vs. 3,931.74, +38.2% (average: +25.8%).
+- Entire homes: 5,761.23 vs. 4,382.5, +31.5% (average: +24.7%).
+- The direction is the same, but the median premium is larger: a few
+  expensive listings raise the average of the non-superhost group.
+  The typical superhost listing is more expensive than the averages
+  suggest.
+=====================================================================
+*/
+
+-- Q6d. Median price, superhost vs. other (short-term)
+SELECT DISTINCT
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 1 THEN price END)
+        OVER () AS median_superhost,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 0 THEN price END)
+        OVER () AS median_other,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 1 AND room_type = 'Entire home/apt' THEN price END)
+        OVER () AS median_superhost_entire,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 0 AND room_type = 'Entire home/apt' THEN price END)
+        OVER () AS median_other_entire
+FROM gold.dim_listing
+WHERE is_long_min_stay = 0
+  AND is_price_outlier = 0
+  AND price IS NOT NULL;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q6d
+median_superhost  median_other  median_superhost_entire  median_other_entire
+5432              3931.74       5761.23                  4382.5
+*/

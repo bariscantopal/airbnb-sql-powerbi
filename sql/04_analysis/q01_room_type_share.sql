@@ -38,3 +38,67 @@ Private room         8440       31.0    3282.76
 Hotel room            272        1.0    8264.41
 Shared room           158        0.6    2915.29
 */
+/*
+=====================================================================
+Dashboard checks (added 2026-11-21)
+---------------------------------------------------------------------
+Purpose
+- The dashboard shows prices as medians (the price distribution is
+  skewed even without outliers); ratings and review counts stay
+  averages.
+- Q1b: market median price in three scopes (Page 0 KPI).
+- Q1c: median price by room type, short-term scope (Page 1).
+
+Definitions
+- PERCENTILE_CONT ignores NULLs, so a CASE without ELSE keeps only
+  the rows that meet the condition.
+- Short-term scope: price IS NOT NULL, is_price_outlier = 0,
+  is_long_min_stay = 0 (16,570 listings).
+
+Finding
+- Market median: 3,710 (all priced), 3,674 (no outliers), 4,411
+  (short-term). Long-stay listings are cheaper per night and pull
+  the median down.
+- Short-term median: entire home 5,000, private room 3,150 (-37%).
+  The average-based gap above (-40%) points the same way.
+- Hotel (233) and shared rooms (131) are small groups; their medians
+  are not interpreted.
+=====================================================================
+*/
+
+-- Q1b. Market median price in three scopes
+SELECT DISTINCT
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price)
+        OVER () AS median_priced,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_price_outlier = 0 THEN price END)
+        OVER () AS median_no_outlier,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_price_outlier = 0 AND is_long_min_stay = 0 THEN price END)
+        OVER () AS median_short_term
+FROM gold.dim_listing;
+
+-- Q1c. Median price by room type, short-term scope
+SELECT DISTINCT
+    room_type,
+    COUNT(*) OVER (PARTITION BY room_type) AS listings,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price)
+        OVER (PARTITION BY room_type)       AS median_price
+FROM gold.dim_listing
+WHERE price IS NOT NULL
+  AND is_price_outlier = 0
+  AND is_long_min_stay = 0
+ORDER BY listings DESC;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q1b
+median_priced  median_no_outlier  median_short_term
+3710           3674               4411.34
+
+Q1c
+room_type        listings  median_price
+Entire home/apt  11916     5000
+Private room     4290      3150
+Hotel room       233       6158
+Shared room      131       2560
+*/

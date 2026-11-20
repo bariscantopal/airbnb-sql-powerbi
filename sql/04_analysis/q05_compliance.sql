@@ -68,3 +68,40 @@ min_stay_band  listings  pct_license_missing  pct_license_number  pct_non_real_e
 30-99 nights   211       0.47                 64.93               32.23                2.37
 100+ nights    9907      95.24                3.52                0.72                 0.52
 */
+/*
+=====================================================================
+Dashboard check (added 2026-11-21)
+---------------------------------------------------------------------
+Purpose
+- Q5c: licence information in the short-term market (Page 2 KPI).
+
+Definitions
+- Scope: listings with a minimum stay under 100 nights
+  (is_long_min_stay = 0), 17,325 listings.
+- Licence information: license_status is not 'Missing'
+  (Has number, Non-real estate or Exempt).
+- Licence number: license_status = 'Has number' only.
+
+Finding
+- 99.46% of listings under 100 nights have licence information,
+  vs. 4.76% of 100+ night listings (Q5b: 100 - 95.24).
+- 82.53% show a licence number; the rest are mostly non-real estate
+  listings (e.g. hotels) or exempt.
+=====================================================================
+*/
+
+-- Q5c. Licence information in the short-term market
+SELECT
+    COUNT(*) AS listings,
+    CAST(100.0 * SUM(CASE WHEN license_status <> 'Missing' THEN 1 ELSE 0 END) / COUNT(*) AS DECIMAL(5,2))   AS pct_licence_info,
+    CAST(100.0 * SUM(CASE WHEN license_status = 'Has number' THEN 1 ELSE 0 END) / COUNT(*) AS DECIMAL(5,2)) AS pct_licence_number
+FROM gold.dim_listing
+WHERE is_long_min_stay = 0;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q5c
+listings  pct_licence_info  pct_licence_number
+17325     99.46             82.53
+*/

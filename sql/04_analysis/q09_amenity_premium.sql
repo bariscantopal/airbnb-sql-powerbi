@@ -209,3 +209,51 @@ kitchen           91.07     1594.21       1468.48          8.56
 parking           67.56     1623.64       1498.32          8.36
 air_conditioning  79.43     1602.95       1505.85          6.45
 */
+/*
+=====================================================================
+Median check (added 2026-11-21)
+---------------------------------------------------------------------
+Purpose
+- Q9c: price-per-person premium of pool and balcony with medians
+  instead of averages. The dashboard shows prices as medians.
+
+Definitions
+- Scope as in Q9: entire homes, short-term market, listings with a
+  price, no outliers.
+- Price per person: price * 1.0 / accommodates.
+- PERCENTILE_CONT ignores NULLs, so a CASE without ELSE keeps only
+  the rows of each group.
+
+Finding
+- Pool: 1,475.31 vs. 1,313.77, +12.3% (average: +20.6%).
+- Balcony: 1,436.78 vs. 1,294.28, +11.0% (average: +12.6%).
+- Both premiums stay positive, but the pool premium almost halves:
+  a few very expensive pool listings raise the average. With medians,
+  pool and balcony are about equal, so "pool is the strongest
+  amenity" (finding above) holds for averages only.
+=====================================================================
+*/
+
+-- Q9c. Median price per person, pool and balcony (entire homes)
+SELECT DISTINCT
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN has_pool = 1 THEN price * 1.0 / accommodates END)
+        OVER () AS ppp_pool,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN has_pool = 0 THEN price * 1.0 / accommodates END)
+        OVER () AS ppp_no_pool,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN has_balcony = 1 THEN price * 1.0 / accommodates END)
+        OVER () AS ppp_balcony,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN has_balcony = 0 THEN price * 1.0 / accommodates END)
+        OVER () AS ppp_no_balcony
+FROM gold.dim_listing
+WHERE room_type = 'Entire home/apt'
+  AND is_long_min_stay = 0
+  AND is_price_outlier = 0
+  AND price IS NOT NULL;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q9c
+ppp_pool   ppp_no_pool  ppp_balcony  ppp_no_balcony
+1475.3125  1313.7742    1436.7767    1294.275
+*/
