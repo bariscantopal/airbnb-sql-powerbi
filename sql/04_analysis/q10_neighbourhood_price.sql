@@ -213,3 +213,104 @@ host_id    listings  avg_guests  avg_price
 30836011   7         3.9         4355.70
 730003552  7         5.1         13017.29
 */
+/*
+=====================================================================
+Neighbourhood profile (added 2026-11-23)
+---------------------------------------------------------------------
+Purpose
+- Q10e: average rating and reviews per listing, for Istanbul and by
+  neighbourhood. Used on the dashboard (Page 5 drill-through KPIs and
+  the tooltip page) and as the SQL reference for checking them.
+
+Definitions
+- Scope: short-term market (is_long_min_stay = 0), 17,325 listings.
+- avg_rating: listings with a rating only (AVG ignores NULLs);
+  rated_listings = COUNT(review_scores_rating).
+- avg_reviews_ltm: reviews in the last 12 months per listing
+  (* 1.0 to avoid integer averaging), as in Q6.
+- Q10e-1: Istanbul. Q10e-2: by neighbourhood (38 neighbourhoods;
+  Sultangazi has no short-term listings).
+
+Finding
+- Istanbul: average rating 4.60, 11.0 reviews per listing in the
+  last 12 months.
+- Kadikoy has the most reviews per listing among large neighbourhoods
+  (20.76); Bahcelievler has 562 listings but only 0.82 reviews per
+  listing, so most of its listings look inactive.
+- Pendik has the lowest average rating among neighbourhoods with
+  100+ listings (3.94).
+- Small neighbourhoods are not reliable: Sancaktepe has 1 listing and
+  no rating, Esenler has 1 rated listing.
+=====================================================================
+*/
+
+-- Q10e-1. Istanbul values (short-term market)
+SELECT
+    COUNT(*)                                                AS listings,
+    COUNT(review_scores_rating)                             AS rated_listings,
+    CAST(AVG(review_scores_rating) AS DECIMAL(4,2))         AS avg_rating,
+    CAST(AVG(number_of_reviews_ltm * 1.0) AS DECIMAL(6,2))  AS avg_reviews_ltm
+FROM gold.dim_listing
+WHERE is_long_min_stay = 0;
+
+-- Q10e-2. Same values by neighbourhood (short-term market)
+SELECT
+    neighbourhood,
+    COUNT(*)                                                AS listings,
+    COUNT(review_scores_rating)                             AS rated_listings,
+    CAST(AVG(review_scores_rating) AS DECIMAL(4,2))         AS avg_rating,
+    CAST(AVG(number_of_reviews_ltm * 1.0) AS DECIMAL(6,2))  AS avg_reviews_ltm
+FROM gold.dim_listing
+WHERE is_long_min_stay = 0
+GROUP BY neighbourhood
+ORDER BY listings DESC;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q10e-1
+listings  rated_listings  avg_rating  avg_reviews_ltm
+17325     13504           4.60        11.00
+
+Q10e-2
+neighbourhood   listings  rated_listings  avg_rating  avg_reviews_ltm
+Beyoglu         5993      5132            4.65        14.58
+Fatih           3236      2431            4.59        10.30
+Sisli           2219      1629            4.57        6.40
+Kadikoy         1092      986             4.61        20.76
+Besiktas        870       675             4.58        9.97
+Bahcelievler    562       234             4.44        0.82
+Esenyurt        397       284             4.47        4.92
+Sile            291       215             4.49        6.38
+Bagcilar        267       178             4.66        3.76
+Uskudar         251       159             4.59        6.19
+Arnavutkoy      192       130             4.50        11.87
+Adalar          174       150             4.64        11.29
+Atasehir        171       137             4.32        8.35
+Umraniye        162       105             4.55        6.62
+Pendik          160       113             3.94        6.77
+Bakirkoy        147       109             4.57        13.17
+Kagithane       122       110             4.73        8.40
+Maltepe         99        85              4.56        16.99
+Avcilar         97        70              4.43        7.37
+Kucukcekmece    95        64              4.41        3.81
+Zeytinburnu     84        62              4.76        9.24
+Sariyer         83        56              4.81        7.54
+Kartal          77        48              4.38        3.27
+Basaksehir      70        42              4.60        1.01
+Buyukcekmece    67        51              4.65        5.54
+Beylikduzu      66        56              4.75        6.67
+Eyup            64        38              4.62        3.83
+Silivri         57        37              4.83        1.47
+Beykoz          51        39              4.76        6.96
+Tuzla           30        27              4.18        6.70
+Gaziosmanpasa   21        13              4.55        6.29
+Bayrampasa      18        12              4.21        2.11
+Catalca         11        6               4.91        3.00
+Cekmekoy        10        9               4.51        13.30
+Gungoren        9         9               4.91        15.67
+Esenler         7         1               4.44        1.14
+Sultanbeyli     2         2               4.90        1.00
+Sancaktepe      1         0               NULL        0.00
+Total: 17,325 listings, 13,504 rated
+*/
