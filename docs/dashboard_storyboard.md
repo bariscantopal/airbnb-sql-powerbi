@@ -150,7 +150,30 @@ Each page tells one finding from `sql/04_analysis` to one audience.
 
 ## Page 6 - Method and data
 - Audience: recruiter, technical reader
-- Content: pipeline (bronze, silver, gold), star schema, definitions, SQL vs Power BI validation
+- Questions: none (how the numbers were built and checked)
+- Headline: 10.6 million rows cleaned in SQL Server (bronze, silver, gold) and checked against Power BI
+- Subtitle: Data source, pipeline, definitions and limitations; snapshot 2026-09-28
+- Visuals:
+  1. KPI cards: Rows processed 10.6M (27,232 listings; 9,939,684 calendar days; 624,804 reviews); Data quality checks 11 (10 PASS, 1 WARN); SQL vs Power BI validation X of X numbers matched (filled after B5); Query performance 40 s -> 0.9 s (Q12a, columnstore index)
+  2. Pipeline diagram (image): Inside Airbnb CSV -> bronze (raw) -> silver (cleaned, flags, DQ checks) -> gold (star schema views) -> Power BI
+  3. Star schema (image): docs/star_schema.png (4 dimensions, 3 facts)
+  4. Table: key definitions
+     - Short-term listing: minimum stay under 100 nights
+     - Median price: median nightly listing price of short-term listings with a price, outliers (above p99, 38,317.80 TRY) excluded
+     - Active listing: at least one review in the 12 months before 2026-09-28
+     - Unavailable-day rate: unavailable calendar days / all days in the next 12 months, listings with a price; not occupancy
+     - Professional host: 5+ listings
+     - Measure rule: prices as medians; ratings, review counts and rates as averages
+     - Neighbourhood comparisons: neighbourhoods with 50+ listings (Page 4)
+  5. List: limitations
+     - One-day snapshot; listings removed before 2026-09-28 and their reviews are not in the data, so older years are undercounted
+     - Reviews are a demand proxy; ratings are compressed near 5
+     - A host is one account; one company may run several
+     - Licence status comes from the listing's own text, not official records; Law No. 7464 is context, not a legal assessment
+     - The forward calendar shows the booking horizon, not seasonality
+     - Associations, not causes
+- Footer: Data: Inside Airbnb (insideairbnb.com), Istanbul, collected 2026-09-28 | Repository: github.com/bariscantopal/airbnb-sql-powerbi
+- Source: docs/data_quality.md, docs/performance.md, docs/data_dictionary.md, docs/star_schema.png, docs/validation.md (B5), sql/05_performance
 
 ## Tooltip page
 - Purpose: small report shown when hovering over a neighbourhood
