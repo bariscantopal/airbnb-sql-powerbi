@@ -19,8 +19,10 @@ Definitions
 - Q12a: all priced listings. Q12b: only listings whose calendar is
   open until the end (at least one available day in September 2027),
   to separate real bookings from calendars that are not opened yet.
-- Runtime: about 40 seconds for Q12a (fact_calendar is a view over a
-  9.9M-row heap); Q12b reads the calendar twice.
+- Runtime: Q12a took about 40 seconds while silver.calendar was a
+  heap; with the clustered columnstore index (see
+  sql/05_performance) it runs in about 0.9 seconds. Q12b reads the
+  calendar twice.
 
 Finding
 - Q12a: unavailability is highest in the nearest months (October 2026:
@@ -40,9 +42,9 @@ Finding
   available); the further ahead you book, the more choice you have.
   February-March have the most available days in Q12a.
 - For investors: the forward calendar should not be used to measure
-  seasonality. Seasonality was measured from reviews in the gold layer
-  (see README): the peak is September-October and the lowest months
-  are January-March.
+  seasonality. Seasonality is measured from reviews in Q12c below:
+  the peak is September-October and the lowest months are
+  January-March.
 =====================================================================
 */
 
@@ -114,4 +116,71 @@ year_month  days    listings  available_rate  unavailable_rate
 2027-07     551614  17794     98.84           1.16
 2027-08     551614  17794     99.29           0.71
 2027-09     483359  17794     98.35           1.65
+*/
+
+/*
+=====================================================================
+Seasonality from reviews (added 2026-11-23)
+---------------------------------------------------------------------
+Purpose
+- Q12c: seasonality measured from reviews, because the forward
+  calendar measures the booking horizon (Q12a/Q12b). Used on the
+  dashboard (Page 4: monthly review share, busiest month KPI).
+
+Definitions
+- Source: gold.fact_reviews joined to gold.dim_date
+  (review_date = full_date).
+- Years 2023-2025 only: full calendar years (2026 ends on
+  2026-09-28, so October-December would be missing).
+- review_share_pct: reviews in the month / all reviews in 2023-2025;
+  SUM() OVER () gives the total over all rows.
+- Reviews are a demand proxy: not every guest leaves a review.
+
+Finding
+- Peak: October (10.36%) and September (9.78%).
+- Quietest: February (5.68%), March (6.37%) and January (6.52%).
+- Summer (June-August) is high but below the autumn peak
+  (8.6-9.5%).
+- Total 343,456 reviews (matches Q3a: 80,389 + 110,084 + 152,983).
+- The three years are pooled, so 2025 (the largest year) weighs
+  most; the monthly pattern was checked in the gold layer.
+=====================================================================
+*/
+
+-- Q12c. Share of reviews by month, 2023-2025
+WITH m AS (
+    SELECT d.month_num,
+           d.month_name,
+           COUNT(*) AS reviews
+    FROM gold.fact_reviews r
+    JOIN gold.dim_date d
+        ON r.review_date = d.full_date
+    WHERE d.year_num BETWEEN 2023 AND 2025
+    GROUP BY d.month_num, d.month_name
+)
+SELECT month_num,
+       month_name,
+       reviews,
+       CAST(100.0 * reviews / SUM(reviews) OVER () AS DECIMAL(5,2)) AS review_share_pct
+FROM m
+ORDER BY month_num;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q12c
+month_num  month_name  reviews  review_share_pct
+1          January     22380    6.52
+2          February    19517    5.68
+3          March       21895    6.37
+4          April       27159    7.91
+5          May         31006    9.03
+6          June        29640    8.63
+7          July        30196    8.79
+8          August      32765    9.54
+9          September   33588    9.78
+10         October     35573    10.36
+11         November    30875    8.99
+12         December    28862    8.40
+Total: 343,456 reviews
 */
