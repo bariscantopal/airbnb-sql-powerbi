@@ -6,6 +6,7 @@ Each page tells one finding from `sql/04_analysis` to one audience.
 - Data snapshot: 2026-09-28 (Inside Airbnb, Istanbul)
 - Prices: nightly listing price, TRY
 - Canvas: 1280 x 720, reading order top-left to bottom-right
+- Wireframe: powerbi/wireframe.pptx; slide images in docs/wireframe/
 
 ## Page card template
 
@@ -48,7 +49,7 @@ Each page tells one finding from `sql/04_analysis` to one audience.
   2. Line: reviews per year, 2011-2025 (2026 is partial, shown in visual 3)
   3. Bar: reviews Jan 1 - Sep 28, 2025 vs 2026 (107,613 vs 145,134; 2026 highlighted)
   4. Bar: median nightly price by room type (Entire home 5,000, Private room 3,150)
-  5. Bar: unavailable-day rate by neighbourhood (100+ listings), city average line 17.5%, Kadikoy 25.2% highlighted
+  5. Bar: unavailable-day rate by neighbourhood, top 10 by rate among neighbourhoods with 50+ listings, city average line 17.5%, Kadikoy 25.2% highlighted
 - Filter context:
   - Reviews: all 624,804 reviews of listings in the data
   - Unavailable-day rate: calendar days of listings with a price, next 12 months
@@ -95,8 +96,8 @@ Each page tells one finding from `sql/04_analysis` to one audience.
   - Ratings and sub-scores: listings with reviews only (13,504)
   - Amenity premiums: entire homes, price per person (price / guests)
 - Caveat (footer note):
-  - Associations, not causes; short-term listings, ratings only for listings with reviews, amenities for entire homes
-  - New hosts cannot yet have 12 months of reviews; hosts who left the platform are not in the data
+  - Associations, not causes; short-term listings, ratings from reviewed listings, amenities for entire homes
+  - New hosts lack 12 months of reviews; hosts who left are not in the data
 - Source: q06_superhost.sql (Q6b, Q6c, Q6d, private room median A1.8), q07_host_tenure.sql, q08_sub_scores.sql (Q8a, Q8b), q09_amenity_premium.sql (Q9c)
 
 ## Page 4 - Guest: where, how much, when
@@ -164,7 +165,7 @@ Each page tells one finding from `sql/04_analysis` to one audience.
      - Unavailable-day rate: unavailable calendar days / all days in the next 12 months, listings with a price; not occupancy
      - Professional host: 5+ listings
      - Measure rule: prices as medians; ratings, review counts and rates as averages
-     - Neighbourhood comparisons: neighbourhoods with 50+ listings (Page 4)
+     - Neighbourhood comparisons: neighbourhoods with 50+ listings (Page 1 and Page 4)
   5. List: limitations
      - One-day snapshot; listings removed before 2026-09-28 and their reviews are not in the data, so older years are undercounted
      - Reviews are a demand proxy; ratings are compressed near 5
