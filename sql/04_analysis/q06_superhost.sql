@@ -151,3 +151,50 @@ Q6d
 median_superhost  median_other  median_superhost_entire  median_other_entire
 5432              3931.74       5761.23                  4382.5
 */
+/*
+=====================================================================
+Median check by room type (added 2026-11-23)
+---------------------------------------------------------------------
+Purpose
+- Q6e: median price of private rooms, superhost vs. other. Together
+  with the entire-home medians in Q6d, this feeds the dashboard chart
+  "median price, superhost vs. other, by room type".
+
+Definitions
+- Scope as in Q6d: short-term market, listings with a price, no
+  outliers; private rooms only (4,290 listings).
+- COUNT(CASE ... THEN 1 END) counts only the rows that meet the
+  condition, because COUNT ignores NULLs.
+
+Finding
+- Private rooms: 3,088.25 vs. 3,177, -2.8% (average in Q6c: -5.5%).
+- Entire homes (Q6d): +31.5%. The superhost price premium exists only
+  for entire homes; superhost private rooms are slightly cheaper.
+- Part of the all-room-types premium (+38.2% in Q6d) is room-type
+  mix: 85% of superhost listings are entire homes vs. 65% for other
+  hosts.
+=====================================================================
+*/
+
+-- Q6e. Median price of private rooms, superhost vs. other (short-term)
+SELECT DISTINCT
+    COUNT(CASE WHEN is_superhost = 1 AND room_type = 'Private room' THEN 1 END)
+        OVER () AS listings_superhost_private,
+    COUNT(CASE WHEN is_superhost = 0 AND room_type = 'Private room' THEN 1 END)
+        OVER () AS listings_other_private,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 1 AND room_type = 'Private room' THEN price END)
+        OVER () AS median_superhost_private,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN is_superhost = 0 AND room_type = 'Private room' THEN price END)
+        OVER () AS median_other_private
+FROM gold.dim_listing
+WHERE is_long_min_stay = 0
+  AND is_price_outlier = 0
+  AND price IS NOT NULL;
+
+/*
+Result (data snapshot: 2026-09-28)
+
+Q6e
+listings_superhost_private  listings_other_private  median_superhost_private  median_other_private
+760                         3530                    3088.25                   3177
+*/
