@@ -1,0 +1,47 @@
+table _Measures
+	lineageTag: c8811883-2383-4c7c-b963-01fcad25a2a3
+
+	measure 'Total Listings' = COUNTROWS(dim_listing)
+		formatString: #,0
+		lineageTag: c9d3c979-dce3-415b-9174-758943b8c57e
+
+	measure 'Active Listings' = CALCULATE([Total Listings] , (dim_listing[is_active]) = TRUE())
+		formatString: #,0
+		lineageTag: ffc9664e-bf7b-4ca2-8453-4a81889effa3
+
+	measure 'Active Listings Share' = DIVIDE ( [Active Listings],[Total Listings])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: b33e1b25-3444-4a62-b9fa-ba16a1f64b51
+
+	measure 'Total Hosts' = DISTINCTCOUNT( dim_listing[host_id])
+		formatString: #,0
+		lineageTag: 8d7e3294-8b85-4ce3-8ce1-c0474357bcfe
+
+	measure 'Professional Host Share' = DIVIDE ( CALCULATE( [Total Listings], dim_listing[host_segment] = "Professional (5+ listings)"), [Total Listings])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: aa68fc39-1fcc-494a-b141-d543f015ea9c
+
+	measure 'Median Price' = CALCULATE(MEDIAN(dim_listing[price]), dim_listing[is_price_outlier] = FALSE (), dim_listing[is_long_min_stay] = FALSE())
+		formatString: #,0
+		lineageTag: 36c084d5-70c4-4770-be0c-791f84283230
+
+	measure 'Professional Hosts Share Of Hosts' = DIVIDE(CALCULATE([Total Hosts],dim_listing[host_segment] = "Professional (5+ listings)"), [Total Hosts])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 0b7236d6-7efb-477a-950f-505a4e3e0dbc
+
+	measure 'Listing Share' = DIVIDE([Total Listings],CALCULATE([Total Listings],ALLSELECTED(dim_listing)))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4e7806bd-b345-4863-a68c-7f18ab01c3a7
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
