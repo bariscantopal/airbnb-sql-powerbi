@@ -1,0 +1,66 @@
+table dim_date
+	lineageTag: cdc6f4f7-a477-475f-ab45-6a71deb06422
+	dataCategory: Time
+
+	column full_date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: f0934b75-93c3-43cf-a7b3-9dfce0c49357
+		summarizeBy: none
+		sourceColumn: full_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year_num
+		dataType: int64
+		formatString: 0
+		lineageTag: 41962fa1-b579-4622-b73c-002c1b81adf0
+		summarizeBy: none
+		sourceColumn: year_num
+
+		annotation SummarizationSetBy = User
+
+	column month_num
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 48690eeb-0d58-4f88-8d44-e702ea13aeb3
+		summarizeBy: none
+		sourceColumn: month_num
+
+		annotation SummarizationSetBy = User
+
+	column month_name
+		dataType: string
+		lineageTag: fa2e109c-f758-435d-bc25-de2912ddb87c
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: month_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column year_month
+		dataType: string
+		lineageTag: eb987214-a315-4fea-b08e-848fdcc15a7a
+		summarizeBy: none
+		sourceColumn: year_month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_dim_date = Source{[Schema="gold",Item="dim_date"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(gold_dim_date,{"date_key", "quarter_num", "iso_week", "day_name", "is_weekend"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

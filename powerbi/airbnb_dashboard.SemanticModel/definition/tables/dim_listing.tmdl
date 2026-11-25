@@ -1,0 +1,264 @@
+table dim_listing
+	lineageTag: 4653916e-14c0-448d-aea0-f6e185f72085
+
+	column listing_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 980d15ed-99a9-4f7e-87e2-6a86fdcb0a1c
+		summarizeBy: none
+		sourceColumn: listing_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column host_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f97f7bce-0754-4092-b9de-fccad0f0d0c2
+		summarizeBy: none
+		sourceColumn: host_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column neighbourhood_key
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c0acd458-e69c-4193-9c43-0b0f5682cb35
+		summarizeBy: none
+		sourceColumn: neighbourhood_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column room_type
+		dataType: string
+		lineageTag: ad7214f5-3837-43c3-b27f-6f4daa0effb3
+		summarizeBy: none
+		sourceColumn: room_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column accommodates
+		dataType: int64
+		formatString: 0
+		lineageTag: 39434634-0f71-4abd-8167-b68b75f4e565
+		summarizeBy: none
+		sourceColumn: accommodates
+
+		annotation SummarizationSetBy = User
+
+	column latitude
+		dataType: double
+		lineageTag: 9c736ed0-a0a7-463a-a072-a11735204070
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longitude
+		dataType: double
+		lineageTag: 7015153f-43db-42ae-8007-ab207ae7f19b
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column price
+		dataType: decimal
+		formatString: #,0
+		lineageTag: fae3f7a6-7766-4460-adad-798bca82eef3
+		summarizeBy: none
+		sourceColumn: price
+
+		annotation SummarizationSetBy = User
+
+	column is_price_outlier
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ff7c4fb6-bf98-488d-ac65-563880c2f698
+		summarizeBy: none
+		sourceColumn: is_price_outlier
+
+		annotation SummarizationSetBy = Automatic
+
+	column min_stay_band
+		dataType: string
+		lineageTag: 1d2ed815-b139-40a0-8898-fba22496ea18
+		summarizeBy: none
+		sourceColumn: min_stay_band
+		sortByColumn: min_stay_band_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column min_stay_band_order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0afa6084-9b0e-41e1-82d3-c18029c839ba
+		summarizeBy: none
+		sourceColumn: min_stay_band_order
+
+		annotation SummarizationSetBy = User
+
+	column is_long_min_stay
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 1eff2856-c68f-4d44-a98a-c1cf11aff231
+		summarizeBy: none
+		sourceColumn: is_long_min_stay
+
+		annotation SummarizationSetBy = Automatic
+
+	column number_of_reviews_ltm
+		dataType: int64
+		formatString: 0
+		lineageTag: 4e00a7c8-bcdf-4b3c-8e60-1471ed338143
+		summarizeBy: none
+		sourceColumn: number_of_reviews_ltm
+
+		annotation SummarizationSetBy = User
+
+	column review_scores_rating
+		dataType: double
+		lineageTag: f7dfbcee-91e4-4dcf-b754-aa6c73e800e4
+		summarizeBy: none
+		sourceColumn: review_scores_rating
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_accuracy
+		dataType: double
+		lineageTag: a2c898a5-5ca7-4647-82a3-f7ac47c1a34d
+		summarizeBy: none
+		sourceColumn: review_scores_accuracy
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_cleanliness
+		dataType: double
+		lineageTag: 6a5729b5-b823-493b-8056-df6818531da8
+		summarizeBy: none
+		sourceColumn: review_scores_cleanliness
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_checkin
+		dataType: double
+		lineageTag: 49da4afe-82ba-490a-a772-b13eb7de1d8a
+		summarizeBy: none
+		sourceColumn: review_scores_checkin
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_communication
+		dataType: double
+		lineageTag: 9c019eaf-3287-418e-9984-043cc9f02420
+		summarizeBy: none
+		sourceColumn: review_scores_communication
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_location
+		dataType: double
+		lineageTag: b777c30a-fe90-4a49-9917-1d8b93fe6994
+		summarizeBy: none
+		sourceColumn: review_scores_location
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column review_scores_value
+		dataType: double
+		lineageTag: 22178cfc-6ded-4dcd-a8c0-50c281f55ddf
+		summarizeBy: none
+		sourceColumn: review_scores_value
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column license_status
+		dataType: string
+		lineageTag: 2ce50003-2d14-4e0f-b361-ebf6e229ddf9
+		summarizeBy: none
+		sourceColumn: license_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_active
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0982c4e4-e310-4260-b979-ed0ee3558a94
+		summarizeBy: none
+		sourceColumn: is_active
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_superhost
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 936fb90d-731f-44bd-baf8-0478ee849314
+		summarizeBy: none
+		sourceColumn: is_superhost
+
+		annotation SummarizationSetBy = Automatic
+
+	column host_segment
+		dataType: string
+		lineageTag: 141d5bb4-26c9-452f-b5d8-93795e61cff3
+		summarizeBy: none
+		sourceColumn: host_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_pool
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f0d47fce-9de1-4451-8287-90dccbd2a95d
+		summarizeBy: none
+		sourceColumn: has_pool
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_balcony
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7cd875ff-31f6-4d38-9d42-b620164df04a
+		summarizeBy: none
+		sourceColumn: has_balcony
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_listing = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_dim_listing = Source{[Schema="gold",Item="dim_listing"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(gold_dim_listing,{{"price", Currency.Type}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"listing_name", "neighbourhood", "property_type", "has_availability", "availability_30", "availability_90", "availability_365", "unavailable_rate_365", "number_of_reviews", "reviews_per_month", "first_review", "last_review", "scraped_date", "has_wifi", "has_air_conditioning", "has_kitchen", "has_washer", "has_parking", "bedrooms", "beds", "bathrooms", "bathrooms_is_shared", "price_quartile", "minimum_nights", "maximum_nights"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

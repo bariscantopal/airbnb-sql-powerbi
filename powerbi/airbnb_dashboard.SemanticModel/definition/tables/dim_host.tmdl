@@ -1,0 +1,45 @@
+table dim_host
+	lineageTag: 98928e6f-7839-42d9-96bc-4262d1143cfb
+
+	column host_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cf7bb974-744c-48d4-8105-b35fd8cf636f
+		summarizeBy: none
+		sourceColumn: host_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column host_tenure_months
+		dataType: int64
+		formatString: 0
+		lineageTag: 47b58f8d-1e5b-4de6-936a-59798b07f8f6
+		summarizeBy: none
+		sourceColumn: host_tenure_months
+
+		annotation SummarizationSetBy = Automatic
+
+	column listings_in_data
+		dataType: int64
+		formatString: 0
+		lineageTag: 4dbdd77a-c1d1-4d50-8d2a-1a520be9d0e0
+		summarizeBy: none
+		sourceColumn: listings_in_data
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_host = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_dim_host = Source{[Schema="gold",Item="dim_host"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(gold_dim_host,{"is_superhost", "host_segment", "host_identity_verified", "host_tenure_years"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

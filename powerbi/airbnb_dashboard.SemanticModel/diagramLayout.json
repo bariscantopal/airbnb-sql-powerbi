@@ -1,0 +1,100 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 858.742210175018,
+            "y": 266.85022475017865
+          },
+          "nodeIndex": "dim_date",
+          "nodeLineageTag": "cdc6f4f7-a477-475f-ab45-6a71deb06422",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 624.74221017501816,
+            "y": 360.98770413487148
+          },
+          "nodeIndex": "dim_host",
+          "nodeLineageTag": "98928e6f-7839-42d9-96bc-4262d1143cfb",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 338.58601778613161,
+            "y": 130.48961814828272
+          },
+          "nodeIndex": "dim_listing",
+          "nodeLineageTag": "4653916e-14c0-448d-aea0-f6e185f72085",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 311.56299498263525,
+            "y": -50
+          },
+          "nodeIndex": "dim_neighbourhood",
+          "nodeLineageTag": "975200bc-dfa4-4798-8745-eb9f6d66bf8e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 269.25244051814343,
+            "y": 483.70044950035719
+          },
+          "nodeIndex": "fact_calendar_monthly",
+          "nodeLineageTag": "96aa8e69-b8b9-4b57-9d93-d26aadff4c73",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 129.95423551426939
+          },
+          "nodeIndex": "fact_reviews",
+          "nodeLineageTag": "aa94afdb-2159-43cd-ac84-f6fa08ef111b",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

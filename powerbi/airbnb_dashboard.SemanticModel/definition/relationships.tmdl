@@ -1,0 +1,24 @@
+relationship AutoDetected_d3ffa5aa-426d-49fc-beb1-e8ef08d72a50
+	fromColumn: fact_calendar_monthly.listing_id
+	toColumn: dim_listing.listing_id
+
+relationship AutoDetected_8f43f6a3-d369-48c0-8b0a-89872b3e530c
+	fromColumn: fact_reviews.listing_id
+	toColumn: dim_listing.listing_id
+
+relationship AutoDetected_3e11d0cf-86a7-49ad-bfdc-13e63b52488c
+	fromColumn: dim_listing.host_id
+	toColumn: dim_host.host_id
+
+relationship AutoDetected_362195cd-1bb1-4944-9c5f-b980c55b638d
+	fromColumn: dim_listing.neighbourhood_key
+	toColumn: dim_neighbourhood.neighbourhood_key
+
+relationship f4a8369e-2138-4ea3-8db7-8d3f1e141b55
+	fromColumn: fact_calendar_monthly.month_start
+	toColumn: dim_date.full_date
+
+relationship 2ddf360c-244a-4788-9a87-5e8a7a937c56
+	fromColumn: fact_reviews.review_date
+	toColumn: dim_date.full_date
+

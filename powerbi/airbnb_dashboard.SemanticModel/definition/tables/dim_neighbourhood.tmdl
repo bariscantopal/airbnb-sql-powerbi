@@ -1,0 +1,34 @@
+table dim_neighbourhood
+	lineageTag: 975200bc-dfa4-4798-8745-eb9f6d66bf8e
+
+	column neighbourhood_key
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4e9ac116-cb92-40d2-8043-debf7c7111b7
+		summarizeBy: none
+		sourceColumn: neighbourhood_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column neighbourhood
+		dataType: string
+		lineageTag: c2091802-3810-4954-878b-cc1677b16683
+		summarizeBy: none
+		sourceColumn: neighbourhood
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_neighbourhood = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_dim_neighbourhood = Source{[Schema="gold",Item="dim_neighbourhood"]}[Data]
+				in
+				    gold_dim_neighbourhood
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

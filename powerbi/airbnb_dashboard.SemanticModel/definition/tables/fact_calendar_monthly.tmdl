@@ -1,0 +1,67 @@
+table fact_calendar_monthly
+	lineageTag: 96aa8e69-b8b9-4b57-9d93-d26aadff4c73
+
+	column listing_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7be1ef87-0b0c-49d6-aa73-ef8856e71ec6
+		summarizeBy: none
+		sourceColumn: listing_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_start
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 3083f2e0-09fc-4ca8-9fa5-43486d017976
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column days_in_data
+		dataType: int64
+		formatString: 0
+		lineageTag: 37e5a9e9-542a-40bd-99f6-864f6f5cc975
+		summarizeBy: sum
+		sourceColumn: days_in_data
+
+		annotation SummarizationSetBy = Automatic
+
+	column available_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 69e8cc40-0640-4281-8c36-79d3608883d7
+		summarizeBy: sum
+		sourceColumn: available_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column unavailable_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 0a3f119b-b272-4723-8146-35493a861490
+		summarizeBy: sum
+		sourceColumn: unavailable_days
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_calendar_monthly = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_fact_calendar_monthly = Source{[Schema="gold",Item="fact_calendar_monthly"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(gold_fact_calendar_monthly,{{"avg_price", Currency.Type}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"is_fully_unavailable", "avg_price", "est_revenue"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

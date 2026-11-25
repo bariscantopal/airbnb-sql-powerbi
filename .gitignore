@@ -10,3 +10,6 @@
 *.tmp
 .vscode/
 __pycache__/
+# power bi project local files
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

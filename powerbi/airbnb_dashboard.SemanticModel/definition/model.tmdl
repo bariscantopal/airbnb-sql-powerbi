@@ -1,0 +1,24 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["dim_listing","dim_host","dim_neighbourhood","dim_date","fact_calendar_monthly","fact_reviews"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dim_listing
+ref table dim_host
+ref table dim_neighbourhood
+ref table dim_date
+ref table fact_calendar_monthly
+ref table fact_reviews
+
+ref cultureInfo en-US
+

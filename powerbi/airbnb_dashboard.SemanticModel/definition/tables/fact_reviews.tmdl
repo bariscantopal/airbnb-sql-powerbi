@@ -1,0 +1,39 @@
+table fact_reviews
+	lineageTag: aa94afdb-2159-43cd-ac84-f6fa08ef111b
+
+	column listing_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 46a72986-673c-4670-a804-6ba4e476b997
+		summarizeBy: none
+		sourceColumn: listing_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 5030b0cb-fb36-4712-a4fa-a9378a02b31f
+		summarizeBy: none
+		sourceColumn: review_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition fact_reviews = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(".\SQLEXPRESS", "AirbnbDWH"),
+				    gold_fact_reviews = Source{[Schema="gold",Item="fact_reviews"]}[Data],
+				    #"Removed Columns" = Table.RemoveColumns(gold_fact_reviews,{"comment_length", "review_id"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
