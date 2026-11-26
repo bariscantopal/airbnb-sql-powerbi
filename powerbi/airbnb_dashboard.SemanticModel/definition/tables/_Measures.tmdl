@@ -100,6 +100,102 @@ table _Measures
 		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: abcb1906-1803-41ae-a5c7-6395853e7c76
 
+	measure 'Superhost Premium Entire Home' =
+			
+			VAR superhost = CALCULATE ( [Median Price Entire Home], dim_listing[is_superhost] = TRUE())
+			VAR other = CALCULATE( [Median Price Entire Home],dim_listing[is_superhost] = FALSE())
+			RETURN
+			    DIVIDE ( superhost- other,other )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: e7ea292f-3ed5-4f67-81a7-c780c2d228dc
+
+	measure 'Average Listing' = CALCULATE( AVERAGE( dim_listing[review_scores_rating]), dim_listing[is_long_min_stay] = FALSE())
+		formatString: 0.00
+		lineageTag: 2ce860ef-d78c-4c91-b69e-248bdf3c3ee4
+
+	measure 'Reviews per Listing' = CALCULATE(AVERAGE(dim_listing[number_of_reviews_ltm]),dim_listing[is_long_min_stay]=FALSE())
+		formatString: 0.0
+		lineageTag: 31d9b127-e2c3-4e10-81ae-6e1ed06c9cfc
+
+	measure 'Superhost Review Ratio' =
+			
+			DIVIDE(
+			     CALCULATE( [Reviews per Listing],dim_listing[is_superhost]=TRUE()),
+			     CALCULATE( [Reviews per Listing],dim_listing[is_superhost]=FALSE()))
+		formatString: 0.0"x"
+		lineageTag: 9bc3eb2c-425f-49b1-92cf-4d853690eb5d
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	measure 'New Host Rating' = CALCULATE( [Average Rating], dim_host[tenure_band_order]=1)
+		formatString: 0.00
+		lineageTag: 521babbd-d142-4ab1-b0d4-db9035ae27a5
+
+	measure 'Average Rating' = CALCULATE ( AVERAGE ( dim_listing[review_scores_rating] ), dim_listing[is_long_min_stay] = FALSE () )
+		lineageTag: 52eaa44b-2235-4b92-854b-3a68d86142ab
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Median Price per Person' = ```
+			
+			CALCULATE(
+			        MEDIANX( dim_listing, DIVIDE(dim_listing[price],dim_listing[accommodates])),
+			        dim_listing[room_type] = "Entire home/apt" ,
+			        dim_listing[is_long_min_stay] = FALSE(),
+			        dim_listing[is_price_outlier] = FALSE(),
+			        NOT ISBLANK( dim_listing[price])
+			)        
+			
+			```
+		formatString: #,0
+		lineageTag: 2a08b5e5-6205-487a-b621-bd143aa86940
+
+	measure 'Pool Premium per Person' =
+			
+			VAR withPool = CALCULATE([Median Price per Person], dim_listing[has_pool] = TRUE())
+			VAR withoutPool = CALCULATE([Median Price per Person], dim_listing[has_pool] = FALSE())
+			RETURN
+			    DIVIDE (withPool-withoutPool, withoutPool)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 72eaf095-97b9-4500-95f9-52860a66e708
+
+	measure 'Balcony Premium per Person' =
+			
+			VAR withBalcony = CALCULATE ( [Median Price per Person], dim_listing[has_balcony] = TRUE () )
+			VAR withoutBalcony = CALCULATE ( [Median Price per Person], dim_listing[has_balcony] = FALSE () )
+			RETURN
+			    DIVIDE ( withBalcony - withoutBalcony, withoutBalcony )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 69deba3a-0fb5-477a-8373-969b0b0fa9e2
+
+	measure 'Sub-score Average' =
+			
+			VAR selectedScore = SELECTEDVALUE ( SubScores[sub_score] )
+			RETURN
+			    CALCULATE (
+			        SWITCH (
+			            selectedScore,
+			            "Value", AVERAGE ( dim_listing[review_scores_value] ),
+			            "Cleanliness", AVERAGE ( dim_listing[review_scores_cleanliness] ),
+			            "Accuracy", AVERAGE ( dim_listing[review_scores_accuracy] ),
+			            "Location", AVERAGE ( dim_listing[review_scores_location] ),
+			            "Check-in", AVERAGE ( dim_listing[review_scores_checkin] ),
+			            "Communication", AVERAGE ( dim_listing[review_scores_communication] )
+			        ),
+			        dim_listing[is_long_min_stay] = FALSE ()
+			    )
+		formatString: 0.00
+		lineageTag: 654462d7-f468-49b9-8c50-65dac2db22c7
+
+	measure 'Sub-score Gap' =
+			
+			VAR topRated = CALCULATE ( [Sub-score Average], dim_listing[review_scores_rating] >= 4.8 )
+			VAR lowRated = CALCULATE ( [Sub-score Average], dim_listing[review_scores_rating] < 4.5 )
+			RETURN
+			    topRated - lowRated
+		formatString: 0.00
+		lineageTag: fe9e8f39-13ec-4e7b-94cd-7c43aab935b5
+
 	partition _Measures = m
 		mode: import
 		source =

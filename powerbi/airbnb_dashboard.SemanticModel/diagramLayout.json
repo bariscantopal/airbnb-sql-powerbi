@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 408,
+        "x": 174.39999389648438,
         "y": 0
       },
       "nodes": [
@@ -42,7 +42,7 @@
           "nodeIndex": "dim_listing",
           "nodeLineageTag": "4653916e-14c0-448d-aea0-f6e185f72085",
           "size": {
-            "height": 300,
+            "height": 180,
             "width": 234
           },
           "zIndex": 0
@@ -88,13 +88,26 @@
         },
         {
           "location": {
-            "x": 1092.742210175018,
-            "y": 314.8502247501786
+            "x": 645.742210175018,
+            "y": 0
           },
           "nodeIndex": "_Measures",
           "nodeLineageTag": "c8811883-2383-4c7c-b963-01fcad25a2a3",
           "size": {
             "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 924.94219186447117,
+            "y": 0
+          },
+          "nodeIndex": "SubScores",
+          "nodeLineageTag": "9a1ad9be-7e31-4abf-b655-18155dac3736",
+          "size": {
+            "height": 200,
             "width": 234
           },
           "zIndex": 0

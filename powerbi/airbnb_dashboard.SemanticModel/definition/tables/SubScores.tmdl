@@ -1,0 +1,42 @@
+table SubScores
+	lineageTag: 9a1ad9be-7e31-4abf-b655-18155dac3736
+
+	column sub_score
+		lineageTag: 17c2273b-6de1-4e41-8f3c-90332ba5eac6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [sub_score]
+		sortByColumn: sort_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column sort_order
+		isHidden
+		formatString: 0
+		lineageTag: c75b3400-85b0-4434-add4-a039cc9298af
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [sort_order]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SubScores = calculated
+		mode: import
+		source = ```
+				
+				DATATABLE(
+				    "sub_score", STRING,
+				    "sort_order", INTEGER,
+				    {
+				        { "Value" ,1 },
+				        { "Cleanliness" ,2 }, 
+				        { "Accuracy" ,3 },
+				        { "Location" ,4 },
+				        { "Check-in" ,5 },
+				        { "Communication" ,6 }
+				    }
+				)        
+				```
+
+	annotation PBI_Id = d5e1b4dfdd6d4e7690bb3f6c3e01640a
+

@@ -71,6 +71,42 @@ table dim_host
 
 		annotation SummarizationSetBy = Automatic
 
+	column tenure_band_order = ```
+			
+			SWITCH(
+			    TRUE(),
+			    dim_host[host_tenure_months] <= 21, 1,
+			    dim_host[host_tenure_months] <= 46, 2,
+			    dim_host[host_tenure_months] <= 82, 3,
+			    4
+			)    
+			```
+		isHidden
+		formatString: 0
+		lineageTag: a3e396c6-9e06-4d6d-a7db-d4c89c60beac
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenure_band = ```
+			
+			SWITCH(
+			    dim_host[tenure_band_order],
+			    1, "0-21 months",
+			    2, "22-46 months" ,
+			    3, "47-82 months" ,
+			    4, "83+ months"
+			)    
+			```
+		lineageTag: 3594d790-73bb-49c9-a699-11d8debf6441
+		summarizeBy: none
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_host = m
 		mode: import
 		source =

@@ -20,6 +20,7 @@ ref table dim_date
 ref table fact_calendar_monthly
 ref table fact_reviews
 ref table _Measures
+ref table SubScores
 
 ref cultureInfo en-US
 
