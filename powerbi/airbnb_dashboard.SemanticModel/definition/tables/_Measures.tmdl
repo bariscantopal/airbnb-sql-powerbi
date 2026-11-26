@@ -33,6 +33,59 @@ table _Measures
 		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: 4e7806bd-b345-4863-a68c-7f18ab01c3a7
 
+	measure Reviews = COUNTROWS( fact_reviews )
+		formatString: 0
+		lineageTag: d83bf988-e0f5-40c8-8f0a-4c8268946e3a
+
+	measure 'Reviews 2025' = CALCULATE([Reviews], dim_date[year_num] = 2025)
+		formatString: 0
+		lineageTag: c20f06b8-73fe-42e5-9046-259071fdf0fe
+
+	measure 'Reviews Same Period 2025' = CALCULATE( [Reviews], DATESBETWEEN(dim_date[full_date],DATE (2025,1,1), DATE(2025,9,28)))
+		formatString: #,0
+		lineageTag: 3fca298c-d41c-4d9b-9f4e-4d5a2b010f46
+
+	measure 'Reviews Same Period 2026' = CALCULATE( [Reviews], DATESBETWEEN(dim_date[full_date],DATE (2026,1,1), DATE(2026,9,28)))
+		formatString: #,0
+		lineageTag: f2bc3d62-677b-418a-9eb5-af5e79e42669
+
+	measure 'Review Growth Same Period' = DIVIDE([Reviews Same Period 2026]-[Reviews Same Period 2025],[Reviews Same Period 2025])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 968d3d54-e38e-49ab-8794-083ab6de9b6b
+
+	measure 'Median Price Entire Home' = CALCULATE([Median Price],dim_listing[room_type] = "Entire home/apt" )
+		formatString: #,0
+		lineageTag: 7c063216-a9ce-4254-a56c-a8f22ef58c85
+
+	measure 'Unavailable-day Rate' = ```
+			
+			VAR unavailable =
+			    CALCULATE (
+			        SUM ( fact_calendar_monthly[unavailable_days]),
+			        dim_listing[is_price_outlier] = FALSE(),
+			        NOT ISBLANK(dim_listing[price])
+			    )
+			VAR days =
+			    CALCULATE (
+			        SUM ( fact_calendar_monthly[days_in_data]), dim_listing[is_price_outlier] = FALSE(),
+			        NOT ISBLANK(dim_listing[price])
+			    )
+			RETURN DIVIDE (unavailable,days)       
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 2cacba57-fce5-4e2d-ab3b-70325559ac68
+
+	measure 'Missing License Share 100+ Nights' = ```
+			
+			VAR longStayMissing =
+			    CALCULATE([Total Listings], dim_listing[is_long_min_stay] = TRUE(), dim_listing[license_status] = "Missing" ) 
+			VAR longStayListings =
+			    CALCULATE( [Total Listings], dim_listing[is_long_min_stay] = TRUE() )
+			RETURN DIVIDE ( longStayMissing, longStayListings)    
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 54027700-bab6-4346-b351-bc3375f6c4b3
+
 	partition _Measures = m
 		mode: import
 		source =
