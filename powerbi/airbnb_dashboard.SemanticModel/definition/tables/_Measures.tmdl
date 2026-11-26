@@ -86,6 +86,20 @@ table _Measures
 		formatString: 0.0%;-0.0%;0.0%
 		lineageTag: 54027700-bab6-4346-b351-bc3375f6c4b3
 
+	measure 'Largest Host Listings' = MAX ( dim_host[listings_in_data])
+		formatString: 0
+		lineageTag: 59614033-3901-4d9e-b658-f11fd2801ab2
+
+	measure 'TOP 10% Hosts Share' =
+			
+			VAR cutoff = ROUND (COUNTROWS( dim_host) * 0.1,0)
+			VAR topListings = CALCULATE(SUM ( dim_host[listings_in_data] ),dim_host[host_rank]<=cutoff)
+			VAR allListings = SUM(dim_host[listings_in_data])
+			RETURN
+			    DIVIDE (topListings,allListings)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: abcb1906-1803-41ae-a5c7-6395853e7c76
+
 	partition _Measures = m
 		mode: import
 		source =

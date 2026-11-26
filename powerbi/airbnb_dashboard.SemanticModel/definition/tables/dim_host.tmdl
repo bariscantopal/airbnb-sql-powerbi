@@ -29,6 +29,48 @@ table dim_host
 
 		annotation SummarizationSetBy = Automatic
 
+	column host_rank =
+			
+			VAR myListings = dim_host[listings_in_data]
+			VAR myId = dim_host[host_id]
+			RETURN
+			    COUNTROWS (
+			        FILTER (
+			            dim_host,
+			            dim_host[listings_in_data] > myListings
+			                || ( dim_host[listings_in_data] = myListings && dim_host[host_id] < myId )
+			        )
+			    ) + 1
+		formatString: 0
+		lineageTag: 55bb55f0-d364-494d-883d-8f9c1fe3343d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column cumulative_listing_share =
+			
+			VAR myRank = dim_host[host_rank]
+			VAR runningTotal =
+			    SUMX (
+			        FILTER ( dim_host, dim_host[host_rank] <= myRank ),
+			        dim_host[listings_in_data]
+			    )
+			VAR total = SUM ( dim_host[listings_in_data] )
+			RETURN
+			    DIVIDE ( runningTotal, total )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 700dedc6-ab4c-4cc4-9fe7-c754eadb244f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column host_rank_pct = DIVIDE(dim_host[host_rank],COUNTROWS(dim_host))
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 56c3ef9a-5fac-4a63-8def-8521c06d5d3d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_host = m
 		mode: import
 		source =
