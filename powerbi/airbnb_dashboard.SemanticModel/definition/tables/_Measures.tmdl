@@ -196,6 +196,109 @@ table _Measures
 		formatString: 0.00
 		lineageTag: fe9e8f39-13ec-4e7b-94cd-7c43aab935b5
 
+	measure 'Priced Short-Term Listings' =
+			
+			CALCULATE([Total Listings],
+			    dim_listing[is_long_min_stay] = FALSE(),
+			    dim_listing[is_price_outlier] = FALSE(),
+			    NOT ISBLANK(dim_listing[price]))
+		formatString: #,0
+		lineageTag: 0c534187-61c8-4b42-ac0d-00e1cc8d0484
+
+	measure 'Price per Person 2 Guests' =
+			
+			CALCULATE (
+			    [Median Price per Person],
+			    dim_listing[accommodates] = 2
+			)
+		formatString: #,0
+		lineageTag: d9ad5a6c-2851-49d4-ae08-6b1b6f706b5e
+
+	measure 'Price per Person 4 Guests' =
+			
+			CALCULATE (
+			    [Median Price per Person],
+			    dim_listing[accommodates] = 4
+			)
+		formatString: #,0
+		lineageTag: 83e87c72-d9eb-4dc0-aadb-db92b44f92d0
+
+	measure 'Price per Person Change 2 to 4 Guests' =
+			
+			VAR TwoGuests = [Price per Person 2 Guests]
+			VAR FourGuests = [Price per Person 4 Guests]
+			RETURN
+			    DIVIDE ( FourGuests - TwoGuests, TwoGuests )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 74d09280-d5d8-4bea-955d-309b9eb3ee17
+
+	measure 'Available-day Rate' =
+			
+			VAR available =
+			    CALCULATE (
+			        SUM ( fact_calendar_monthly[available_days] ),
+			        dim_listing[is_price_outlier] = FALSE (),
+			        NOT ISBLANK ( dim_listing[price] )
+			    )
+			VAR days =
+			    CALCULATE (
+			        SUM ( fact_calendar_monthly[days_in_data] ),
+			        dim_listing[is_price_outlier] = FALSE (),
+			        NOT ISBLANK ( dim_listing[price] )
+			    )
+			RETURN
+			    DIVIDE ( available, days )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: ab8e6fe6-d2ef-463f-97c6-b8090645cb52
+
+	measure 'Available Days Next Month' =
+			
+			CALCULATE (
+			    [Available-day Rate],
+			    dim_date[year_month] = "2026-10"
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 83276edb-0fc5-4418-8d97-4eceafc73432
+
+	measure 'Review Share by Month' =
+			
+			VAR monthReviews =
+			    CALCULATE (
+			        [Reviews],
+			        dim_date[year_num] >= 2023 && dim_date[year_num] <= 2025
+			    )
+			VAR allReviews =
+			    CALCULATE (
+			        [Reviews],
+			        dim_date[year_num] >= 2023 && dim_date[year_num] <= 2025,
+			        REMOVEFILTERS ( dim_date[month_name], dim_date[month_num] )
+			    )
+			RETURN
+			    DIVIDE ( monthReviews, allReviews )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 3f4c0e78-0e9d-4577-9a91-c96675efe06c
+
+	measure 'Busiest Month Share' =
+			
+			MAXX (
+			    ALL ( dim_date[month_name], dim_date[month_num] ),
+			    [Review Share by Month]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 33f5e37d-3bb7-47e5-8a03-4ca1d2c3a47f
+
+	measure 'Busiest Month' =
+			
+			VAR topMonth =
+			    TOPN (
+			        1,
+			        ALL ( dim_date[month_name], dim_date[month_num] ),
+			        [Review Share by Month]
+			    )
+			RETURN
+			    MAXX ( topMonth, dim_date[month_name] )
+		lineageTag: 3adfab48-1cf5-4f83-a55d-bc6f406596aa
+
 	partition _Measures = m
 		mode: import
 		source =
