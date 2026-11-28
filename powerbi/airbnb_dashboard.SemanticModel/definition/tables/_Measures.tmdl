@@ -299,6 +299,54 @@ table _Measures
 			    MAXX ( topMonth, dim_date[month_name] )
 		lineageTag: 3adfab48-1cf5-4f83-a55d-bc6f406596aa
 
+	measure 'Median Price Istanbul' =
+			
+			CALCULATE( [Median Price], REMOVEFILTERS(dim_neighbourhood))
+		formatString: #,0
+		lineageTag: 37877aa0-7684-40e3-b17a-fc0b4b03e91c
+
+	measure 'Unavailable-day Rate Istanbul' =
+			
+			CALCULATE([Unavailable-day Rate], REMOVEFILTERS(dim_neighbourhood))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 5519ecf1-248c-4187-b0a0-3eafe42ce6c5
+
+	measure 'Average Rating Istanbul' =
+			
+			CALCULATE([Average Rating], REMOVEFILTERS(dim_neighbourhood))
+		formatString: 0.00
+		lineageTag: 5d01e2d9-f18d-402c-bcae-c0cfa3f6ff61
+
+	measure 'Reviews per Listing Istanbul' =
+			
+			CALCULATE( [Reviews per Listing], REMOVEFILTERS(dim_neighbourhood))
+		formatString: 0.0
+		lineageTag: c86de5eb-f2f2-4581-a4f8-785ec9b8e06d
+
+	measure 'Review Share by Month Istanbul' =
+			
+			CALCULATE( [Review Share by Month], REMOVEFILTERS(dim_neighbourhood))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 2b748e85-a667-4c4c-9eb2-c96dca26107c
+
+	measure 'Neighbourhood Listing Share' =
+			
+			DIVIDE ( [Total Listings], CALCULATE([Total Listings],REMOVEFILTERS(dim_neighbourhood)))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 0b6d2af4-e514-48cc-aa87-af283de7fa73
+
+	measure 'Selected Neighbourhood Title' =
+			
+			"Selected neighbourhood: "
+			    & SELECTEDVALUE ( dim_neighbourhood[neighbourhood], "All neighbourhoods" )
+		lineageTag: 74262230-cf95-4284-9045-7197703cebfe
+
+	measure 'Total Listings Istanbul' =
+			
+			CALCULATE([Total Listings],REMOVEFILTERS(dim_neighbourhood))
+		formatString: #,0
+		lineageTag: f4ba747a-234e-449d-9705-c2594fcd9092
+
 	partition _Measures = m
 		mode: import
 		source =

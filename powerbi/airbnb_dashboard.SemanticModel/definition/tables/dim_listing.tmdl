@@ -247,6 +247,21 @@ table dim_listing
 
 		annotation SummarizationSetBy = Automatic
 
+	column price_bin = ```
+			
+			IF (
+			    ISBLANK( dim_listing[price] ),
+			    BLANK(),
+			    FLOOR(dim_listing[price],1000)
+			)
+			
+			```
+		formatString: #,0
+		lineageTag: f71137de-4e67-4119-9823-89e8edd6e9fc
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_listing = m
 		mode: import
 		source =
